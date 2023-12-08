@@ -16,8 +16,6 @@ from jupyter_matlab_kernel import mwi_comm_helpers
 from matlab_proxy import util as mwi_util
 from matlab_proxy import settings as mwi_settings
 
-from matlab_proxy.util.mwi import logger as mwi_logger
-
 _MATLAB_STARTUP_TIMEOUT = mwi_settings.get_process_startup_timeout()
 
 
@@ -78,7 +76,7 @@ def start_matlab_proxy_for_testing():
     return url, matlab_proxy_base_url, headers
 
 
-def _start_matlab_proxy_using_jupyter(url, headers, logger):
+def _start_matlab_proxy_using_jupyter(url, headers):
     """
     Start matlab-proxy using jupyter server which started the current kernel
     process by sending HTTP request to the endpoint registered through
@@ -92,7 +90,7 @@ def _start_matlab_proxy_using_jupyter(url, headers, logger):
         bool: True if jupyter server has successfully started matlab-proxy else False.
     """
 
-    logger.info("Starting Jupyter MATLAB Proxy using Jupyter")
+    print("Starting Jupyter MATLAB Proxy using Jupyter")
 
     # This is content that is present in the matlab-proxy index.html page which
     # can be used to validate a proper response.
@@ -102,7 +100,7 @@ def _start_matlab_proxy_using_jupyter(url, headers, logger):
     # If matlab-proxy is not started, jupyter-server starts it at this point.
     resp = requests.get(url, headers=headers, verify=False)
 
-    logger.debug(f"matlab-proxy endpoint request status code: {resp.status_code}")
+    print(f"matlab-proxy endpoint request status code: {resp.status_code}")
 
     return (
         resp.status_code == requests.codes.OK
@@ -124,9 +122,6 @@ def start_matlab_proxy():
             base_url (string): Complete base url for matlab-proxy provided by jupyter server
             headers (dict): HTTP headers required while sending HTTP requests to matlab-proxy
     """
-
-    logger = mwi_logger.get(init=True)
-
     # If jupyter testing is enabled, then a standalone matlab-proxy server would be
     # launched by the tests and kernel would expect the configurations of this matlab-proxy
     # server which is provided through environment variables to 'start_matlab_proxy_for_testing'
@@ -204,11 +199,11 @@ def start_matlab_proxy():
     for token in available_tokens.values():
         if token:
             headers = {"Authorization": f"token {token}"}
-            logger.debug(f"Token: {token}")
+            print(f"Token: {token}")
         else:
             headers = None
 
-        if _start_matlab_proxy_using_jupyter(url, headers, logger):
+        if _start_matlab_proxy_using_jupyter(url, headers):
             return url, nb_server["base_url"], headers
 
     raise MATLABConnectionError(
