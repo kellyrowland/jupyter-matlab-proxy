@@ -16,7 +16,7 @@ from jupyter_matlab_kernel import mwi_comm_helpers
 from matlab_proxy import util as mwi_util
 from matlab_proxy import settings as mwi_settings
 
-from mwi_util.mwi import logger as mwi_logger
+from matlab_proxy.util.mwi import logger as mwi_logger
 
 _MATLAB_STARTUP_TIMEOUT = mwi_settings.get_process_startup_timeout()
 
